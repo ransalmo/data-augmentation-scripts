@@ -1,2 +1,2 @@
-# data-aumentation-scripts
+# data-augmentation-scripts
 Data augmentation scripts for dataset preparation
