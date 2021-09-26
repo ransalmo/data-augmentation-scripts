@@ -50,22 +50,16 @@ def fixCoordinatesXML(xmlPath):
     return
 
 
-def main(args):
-    if not os.path.exists(args.path):
-        raise ValueError("The source folder doesn't exist, please check the path")
-    files = [file for file in os.listdir(args.path) if file.endswith(".xml") or file.endswith(".XML")]
-    filesToProcess = len(files)
-    print("Files to process: {0}".format(filesToProcess))
+def fix_cordinates_xml_files(path):
+    if not os.path.exists(path) or not os.path.exists(os.path.join(args.path, "annotations")):
+        raise ValueError("The source folder doesn't exist or the annotations "
+                         "folder does not exist, please check the path")
+    files = [file for file in os.listdir(path) if file.endswith(".xml") or file.endswith(".XML")]
+    files_to_process = len(files)
+    print("Files to process: {0}".format(files_to_process))
     for index, file in enumerate(files):
-        filePath = os.path.join(args.path, file)
+        file_path = os.path.join(path, file)
         print("Processing rotating image {0}".format(index + 1))
-        fixCoordinatesXML(filePath)
-        # fixFilenameXML(filePath)
+        fixCoordinatesXML(file_path)
 
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--path", help="folder path were images are located",
-                        default=os.path.join(os.getcwd(), "images", "annotations"))
-    args = parser.parse_args()
-    main(args)

@@ -22,16 +22,16 @@ def xml_to_csv(path):
         tree = ET.parse(xml_file)
         root = tree.getroot()
         for index, member in enumerate(root.findall('object')):
-            indexBndBox = bndBoxIndex(member)
+            index_bnd_box = bndBoxIndex(member)
 
             value = (root.find('filename').text,
                      int(root.find('size')[0].text),
                      int(root.find('size')[1].text),
                      member[0].text,
-                     int(member[indexBndBox][0].text),
-                     int(member[indexBndBox][1].text),
-                     int(member[indexBndBox][2].text),
-                     int(member[indexBndBox][3].text)
+                     int(member[index_bnd_box][0].text),
+                     int(member[index_bnd_box][1].text),
+                     int(member[index_bnd_box][2].text),
+                     int(member[index_bnd_box][3].text)
                      )
             xml_list.append(value)
     column_name = ['filename', 'width', 'height', 'class', 'xmin', 'ymin', 'xmax', 'ymax']
@@ -39,11 +39,14 @@ def xml_to_csv(path):
     return xml_df
 
 
-def main():
-    image_path = os.path.join(os.getcwd(), 'images', 'annotations')
-    xml_df = xml_to_csv(image_path)
-    xml_df.to_csv('coffee_labels.csv', index=None)
-    print('Successfully converted xml to csv.')
+def generate_csv_from_annotations(path, path_new_file):
+    image_path = os.path.join(path, 'annotations')
+    images_count = [file for file in os.listdir(path) if file.endswith(".jpg") or file.endswith(".jpeg")]
+    annotations_count = [file for file in os.listdir(path) if file.endswith(".xml")]
+    if images_count != annotations_count:
+        print("Check annotations and images files, there is a mismatch")
+    else:
+        xml_df = xml_to_csv(image_path)
+        xml_df.to_csv(path_new_file, index=None)
+        print('Successfully converted xml to csv.')
 
-
-main()

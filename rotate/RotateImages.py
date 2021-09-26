@@ -1,3 +1,5 @@
+import random
+
 import cv2
 import imutils
 import math
@@ -5,10 +7,9 @@ import argparse
 import os
 import shutil
 import xml.etree.ElementTree as ET
+from .. import util
 
-
-
-def rotatePoint(x, y, angle, height, width):
+def rotate_point(x, y, angle, height, width):
     x = int(x)
     y = int(y)
 
@@ -22,7 +23,7 @@ def rotatePoint(x, y, angle, height, width):
     return [xCalc, yCalc]
 
 
-def rotateImage(path, destinyPath, degree, prefix = "rotated_270_"):
+def rotate_image(path, destinyPath, degree, prefix ="rotated_270_"):
     image = cv2.imread(path)
     filePath, fileName = os.path.split(path)
     newFileName = prefix + "_" + fileName
@@ -32,7 +33,7 @@ def rotateImage(path, destinyPath, degree, prefix = "rotated_270_"):
     return
 
 
-def renameXML(originalPath, newPath, imageFile):
+def rename_xml(originalPath, newPath, imageFile):
     filePath, fileName = os.path.split(originalPath)
     try:
         shutil.copy(originalPath, newPath)
@@ -46,7 +47,7 @@ def renameXML(originalPath, newPath, imageFile):
         print("Problemas procesando el archivo {0}".format(originalPath))
 
 
-def modifyCoordinatesXML(xmlPath, angle):
+def modify_coordinates_xml(xmlPath, angle):
     tree = ET.parse(xmlPath)
     root = tree.getroot()
     width = 0
@@ -68,8 +69,8 @@ def modifyCoordinatesXML(xmlPath, angle):
         xmax = children[2].text
         ymax = children[3].text
         print("Coordenadas originales {0} {1} {2} {3}".format(xmin, ymin, xmax, ymax))
-        xmin, ymin = rotatePoint(xmin, ymin, angle, int(height), int(width))
-        xmax, ymax = rotatePoint(xmax, ymax, angle, int(height), int(width))
+        xmin, ymin = rotate_point(xmin, ymin, angle, int(height), int(width))
+        xmax, ymax = rotate_point(xmax, ymax, angle, int(height), int(width))
 
         if int(ymax) < int(ymin):
             print("Coordinates swapping y")
@@ -95,36 +96,31 @@ def modifyCoordinatesXML(xmlPath, angle):
     return
 
 
-def main(args):
-    if args.degrees not in ["90","180","270","360"]:
-        raise ValueError('The specified degree is not supported')
-    prefix_text = "rotated_" + str(args.degrees) + "_"
-    if not os.path.exists(args.path):
+def rotate_images(path, destiny_path, use_sample=True, sample_percentage: int = 50, degrees: list = [90, 180, 270, 360]):
+    prefix_text = "rotated_"
+    if not os.path.exists(path):
         raise ValueError("The source folder doesn't exist, please check the path")
-    if not os.path.exists(args.destiny):
-        os.makedirs(args.destiny)
-    if not os.path.exists(os.path.join(args.destiny,'annotations')):
-        os.makedirs(os.path.join(args.destiny,'annotations'))
-    files = [file for file in os.listdir(args.path) if file.endswith(".jpg") or file.endswith(".JPG")]
-    filesToProcess = len(files)
-    print("Files to process: {0}".format(filesToProcess))
+    if not os.path.exists(destiny_path):
+        os.makedirs(destiny_path)
+    if not os.path.exists(os.path.join(destiny_path,'annotations')):
+        os.makedirs(os.path.join(destiny_path,'annotations'))
+    if not use_sample:
+        files = [file for file in os.listdir(path) if file.endswith(".jpg") or file.endswith(".JPG")]
+        files_to_process_count = len(files)
+    else:
+        files = [file for file in os.listdir(path) if file.endswith(".jpg") or file.endswith(".JPG")]
+        files = util.PickSample.pick_sample_files_from_directory(files, 50)
+        files_to_process_count = len(files)
+
+    print("Files to process: {0}".format(files_to_process_count))
     for index, file in enumerate(files):
-        filePath = os.path.join(args.path, file)
+        file_path = os.path.join(path, file)
         print("Processing rotating image {0}".format(index + 1))
-        rotateImage(filePath, args.destiny, args.degrees, prefix_text)
+        degree = random.choice(degrees)
+        rotate_image(file_path, destiny_path, degree, prefix_text)
         print("Generating new XML for image {0}".format(index + 1))
-        originalXMLPath = os.path.join(args.path, 'annotations',file.replace('.jpg','.xml').replace('.JPG','.xml'))
-        newXMLFile = prefix_text + "_" + file.replace('.jpg','.xml')
-        newXMLPath = os.path.join(args.destiny, 'annotations', newXMLFile)
-        renameXML(originalXMLPath, newXMLPath, newXMLFile)
-        modifyCoordinatesXML(newXMLPath, args.degrees)
-
-
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--path", help="folder path were images are located", default= os.path.join(os.getcwd(), "images"))
-    parser.add_argument("--degrees", help="degrees to rotate 90-180-270-360", default="90")
-    parser.add_argument("--destiny", help="destiny path for new images and annotations", default=os.path.join(os.getcwd(), "results"))
-    args = parser.parse_args()
-    main(args)
+        original_xml_path = os.path.join(path, 'annotations',file.replace('.jpg','.xml').replace('.JPG','.xml'))
+        new_xml_file = prefix_text + "_" + file.replace('.jpg','.xml')
+        new_xml_path = os.path.join(destiny_path, 'annotations', new_xml_file)
+        rename_xml(original_xml_path, new_xml_path, new_xml_file)
+        modify_coordinates_xml(new_xml_path, degree)
