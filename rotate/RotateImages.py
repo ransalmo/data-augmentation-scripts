@@ -109,7 +109,7 @@ def rotate_images(path, destiny_path, use_sample=True, sample_percentage: int = 
         files_to_process_count = len(files)
     else:
         files = [file for file in os.listdir(path) if file.endswith(".jpg") or file.endswith(".JPG")]
-        files = util.PickSample.pick_sample_files_from_directory(files, 50)
+        files = util.PickSample.pick_sample_files_from_directory(files, sample_percentage)
         files_to_process_count = len(files)
 
     print("Files to process: {0}".format(files_to_process_count))
