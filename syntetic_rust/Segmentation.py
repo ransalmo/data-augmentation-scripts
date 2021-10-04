@@ -3,7 +3,8 @@ import numpy as np
 import os
 import uuid
 
-def grabcut(img_orig, rect_final, destiny_filepath):
+
+def grabcut(img_orig, rect_final, destiny_filepath, crop_image = False):
     mask = np.zeros(img_orig.shape[:2],np.uint8)
     x,y,w,h = rect_final
     mask[y:y+h, x:x+w] = 1
@@ -22,6 +23,9 @@ def grabcut(img_orig, rect_final, destiny_filepath):
     rgba = [b, g, r, alpha]
     img_orig = cv2.merge(rgba, 4)
 
+    if crop_image:
+        img_orig = img_orig[y:y+h, x:x+w]
+
     cv2.imwrite(destiny_filepath, img_orig)
     return os.path.split(destiny_filepath)[1]
 
@@ -39,6 +43,4 @@ def batch_segmentation(source_folder, destiny_folder):
             image_generated = grabcut(img_orig=image, rect_final=rectangle, destiny_filepath=file_path)
             print(image_generated)
 
-if __name__ == "__main__":
-    batch_segmentation(os.path.join(os.getcwd(), "test2"), os.path.join(os.getcwd(), "results"))
 
