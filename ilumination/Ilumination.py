@@ -3,6 +3,22 @@ import numpy as np
 import cv2
 import random
 
+import shutil
+import xml.etree.ElementTree as ET
+
+def copy_and_rename_xml(original_path, new_path, reference_image_name):
+    original_directory, original_image_file_name = os.path.split(original_path)
+    try:
+        shutil.copy(original_path, new_path)
+        #change xml metadata
+        tree = ET.parse(new_path)
+        root = tree.getroot()
+        for fileNameXML in root.iter('filename'):
+            fileNameXML.text = reference_image_name
+        tree.write(new_path)
+    except:
+        print("Problemas procesando el archivo {0}".format(original_path))
+
 
 def adjust_gamma(image, gamma=1.0):
     # build a lookup table mapping the pixel values [0, 255] to
@@ -22,11 +38,8 @@ def generate_gamma_corrected_images(source_path, destiny_path):
         output = adjust_gamma(original_img, random_gamma)
         filename, file_extension = os.path.splitext(file)
         cv2.imwrite(os.path.join(destiny_path, filename + "_light" + file_extension), output)
+        xml_file_name = filename.replace(".jpeg", ".xml").replace(".jpg", ".xml")
+        # write XML
+        xml_path = os.path.join(source_path, "annotations", xml_file_name)
+        copy_and_rename_xml(xml_path, os.path.join(destiny_path, filename + "_light" + ".xml"))
 
-
-def test():
-    generate_gamma_corrected_images(os.path.join(os.getcwd(), "test"), os.path.join(os.getcwd(), "test"))
-
-
-if __name__ == '__main__':
-    test()

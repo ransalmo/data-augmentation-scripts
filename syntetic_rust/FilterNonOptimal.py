@@ -26,6 +26,3 @@ def remove_bad_candidates(path_to_filter, file_extension = "png"):
 		if result == 0.0:
 			print("Removing the image is not useful")
 			os.remove(os.path.join(path_to_filter, file))
-
-
-remove_bad_candidates(os.path.join(os.getcwd(),'fusion_results'))

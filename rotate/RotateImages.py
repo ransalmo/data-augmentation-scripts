@@ -3,11 +3,12 @@ import random
 import cv2
 import imutils
 import math
-import argparse
 import os
 import shutil
 import xml.etree.ElementTree as ET
-from .. import util
+import common_scripts
+import uuid
+
 
 def rotate_point(x, y, angle, height, width):
     x = int(x)
@@ -23,11 +24,11 @@ def rotate_point(x, y, angle, height, width):
     return [xCalc, yCalc]
 
 
-def rotate_image(path, destinyPath, degree, prefix ="rotated_270_"):
+def rotate_image(path, destiny_path, degree, prefix ="rotated_270_"):
     image = cv2.imread(path)
     filePath, fileName = os.path.split(path)
     newFileName = prefix + "_" + fileName
-    newPath = os.path.join(destinyPath, newFileName)
+    newPath = os.path.join(destiny_path, newFileName)
     rotatedImage = imutils.rotate_bound(image, int(degree))
     cv2.imwrite(newPath, rotatedImage)
     return
@@ -84,7 +85,6 @@ def modify_coordinates_xml(xmlPath, angle):
             xmin = xmax
             xmax = temp
 
-
         children[0].text = str(round(xmin))
         children[1].text = str(round(ymin))
         children[2].text = str(round(xmax))
@@ -109,7 +109,7 @@ def rotate_images(path, destiny_path, use_sample=True, sample_percentage: int = 
         files_to_process_count = len(files)
     else:
         files = [file for file in os.listdir(path) if file.endswith(".jpg") or file.endswith(".JPG")]
-        files = util.PickSample.pick_sample_files_from_directory(files, sample_percentage)
+        files = common_scripts.PickSample.pick_sample_files_from_directory(files, sample_percentage)
         files_to_process_count = len(files)
 
     print("Files to process: {0}".format(files_to_process_count))
@@ -117,10 +117,11 @@ def rotate_images(path, destiny_path, use_sample=True, sample_percentage: int = 
         file_path = os.path.join(path, file)
         print("Processing rotating image {0}".format(index + 1))
         degree = random.choice(degrees)
-        rotate_image(file_path, destiny_path, degree, prefix_text)
+        new_prefix = prefix_text + str(uuid.uuid4().hex)
+        rotate_image(file_path, destiny_path, degree, new_prefix)
         print("Generating new XML for image {0}".format(index + 1))
         original_xml_path = os.path.join(path, 'annotations',file.replace('.jpg','.xml').replace('.JPG','.xml'))
-        new_xml_file = prefix_text + "_" + file.replace('.jpg','.xml')
+        new_xml_file = new_prefix + "_" + file.replace('.jpg','.xml')
         new_xml_path = os.path.join(destiny_path, 'annotations', new_xml_file)
         rename_xml(original_xml_path, new_xml_path, new_xml_file)
         modify_coordinates_xml(new_xml_path, degree)

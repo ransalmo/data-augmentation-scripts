@@ -1,0 +1,2 @@
+import  syntetic_rust
+
