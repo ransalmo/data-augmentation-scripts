@@ -1,8 +1,8 @@
-import rotate
+import rotate.rotate
 
-source_folder = ""
-destiny_folder = ""
+source_folder = "/Users/randysalas/Documents/Roya/Images"
+destiny_folder = "/Users/randysalas/Documents/Roya/Rotated"
 
-rotate.RotateImages.rotate_images(source_folder, destiny_folder, True, 50, [90, 180])
-rotate.RotateImages.rotate_images(source_folder, destiny_folder, True, 60, [270])
+rotate.rotate.rotate_images(source_folder, destiny_folder, True, 50, [90, 180])
+rotate.rotate.rotate_images(source_folder, destiny_folder, True, 60, [270])
 

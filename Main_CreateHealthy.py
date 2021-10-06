@@ -1,7 +1,7 @@
-import util
+import util.create_healthy_leafs
 
-source_folder = ""
+source_folder = "/Users/randysalas/Documents/Roya/Images"
 
-destiny_folder = ""
+destiny_folder = "/Users/randysalas/Documents/Roya/Healthy"
 
-util.CopyHealthLeafs.copy_clean_images(source_folder, destiny_folder)
+util.create_healthy_leafs.copy_clean_images(source_folder, destiny_folder)

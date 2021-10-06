@@ -6,8 +6,12 @@ import math
 import os
 import shutil
 import xml.etree.ElementTree as ET
-import common_scripts
 import uuid
+
+
+def pick_sample_files_from_directory(file_list: list, percentage: int):
+    cant_elements_to_pick: int = (len(file_list) * percentage) // 100
+    return random.sample(file_list, cant_elements_to_pick)
 
 
 def rotate_point(x, y, angle, height, width):
@@ -109,7 +113,7 @@ def rotate_images(path, destiny_path, use_sample=True, sample_percentage: int = 
         files_to_process_count = len(files)
     else:
         files = [file for file in os.listdir(path) if file.endswith(".jpg") or file.endswith(".JPG")]
-        files = common_scripts.PickSample.pick_sample_files_from_directory(files, sample_percentage)
+        files = pick_sample_files_from_directory(files, sample_percentage)
         files_to_process_count = len(files)
 
     print("Files to process: {0}".format(files_to_process_count))

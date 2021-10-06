@@ -27,6 +27,6 @@ def copy_clean_images(source_images_path, destiny_path):
                 discard = True
                 break
         if not discard:
-            image_file = file.replace(".xml", "jpg")
+            image_file = file.replace(".xml", ".jpg")
             shutil.copy(os.path.join(source_images_path, image_file), destiny_path)
 

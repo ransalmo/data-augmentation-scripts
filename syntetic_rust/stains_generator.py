@@ -7,7 +7,9 @@ import numpy
 import math
 import xml.etree.ElementTree as ET
 import uuid
-import Segmentation
+from . segmentation.segmentation import *
+
+
 
 
 def get_images_and_annotation(images_path, xml_path):
@@ -48,11 +50,14 @@ def generate_stains(images_path, xml_path, classes, result_path, max_height=100,
                         prefix = name
                         file_name = prefix + "_" + str(uuid.uuid4().hex) + ".png"
                         source_img = cv2.imread(os.path.join(images_path, image))
-                        result_file_name = Segmentation.grabcut(
+                        result_file_name = grabcut(
                             source_img,
                             [xmin, ymin, width, height],
                             os.path.join(result_path, file_name), crop_image = True)
                         print(result_file_name)
 
+def test_inside():
+    test()
 
 
+test_inside()

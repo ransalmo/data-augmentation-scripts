@@ -4,6 +4,10 @@ import os
 import uuid
 
 
+def test():
+    print("Hello")
+
+
 def grabcut(img_orig, rect_final, destiny_filepath, crop_image = False):
     mask = np.zeros(img_orig.shape[:2],np.uint8)
     x,y,w,h = rect_final
