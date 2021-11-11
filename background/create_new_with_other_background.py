@@ -93,39 +93,43 @@ def create_new_image_with_backcground(source_folder, destiny_folder, backgrounds
     images = [file for file in os.listdir(source_folder) if file.endswith("jpg") or file.endswith("jpeg")]
     backgrounds = [file for file in os.listdir(backgrounds_path) if file.endswith("jpg") or file.endswith("jpeg")]
     for image in images:
-        background_file = random.choice(backgrounds)
-        temp_back = cv2.imread(os.path.join(backgrounds_path, background_file))
-        temp_image = cv2.imread(os.path.join(source_folder, image))
-        height_back, width_back, _ = temp_back.shape
-        height_image, width_image, _ = temp_image.shape
-        if height_back >= height_image and width_back >= width_image:
-            temp_back = crop_picture_arr(temp_back, height_image, width_image)
-        else:
-            temp_back = resize(temp_back, height_image, width_image)
-        back_ground_temp_path = os.path.join(os.getcwd(), "wkr_background.jpg")
-        cv2.imwrite(back_ground_temp_path, temp_back)
-        leaf_temp_path = os.path.join(os.getcwd(), "wkr_image.png")
-        grabcut_temp(temp_image, [5,5,width_image-5,height_image-5], leaf_temp_path)
+        try:
+            background_file = random.choice(backgrounds)
+            temp_back = cv2.imread(os.path.join(backgrounds_path, background_file))
+            temp_image = cv2.imread(os.path.join(source_folder, image))
+            height_back, width_back, _ = temp_back.shape
+            height_image, width_image, _ = temp_image.shape
+            if height_back >= height_image and width_back >= width_image:
+                temp_back = crop_picture_arr(temp_back, height_image, width_image)
+            else:
+                temp_back = resize(temp_back, height_image, width_image)
+            back_ground_temp_path = os.path.join(os.getcwd(), "wkr_background.jpg")
+            cv2.imwrite(back_ground_temp_path, temp_back)
+            leaf_temp_path = os.path.join(os.getcwd(), "wkr_image.png")
+            grabcut_temp(temp_image, [5,5,width_image-5,height_image-5], leaf_temp_path)
 
-        # Prepare inputs
-        img = np.array(Image.open(back_ground_temp_path))
-        img_overlay_rgba = np.array(
-            Image.open(leaf_temp_path))
+            # Prepare inputs
+            img = np.array(Image.open(back_ground_temp_path))
+            img_overlay_rgba = np.array(
+                Image.open(leaf_temp_path))
 
-        # Perform blending
-        alpha_mask = img_overlay_rgba[:, :, 3] / 255.0
-        img_result = img[:, :, :3].copy()
-        img_overlay = img_overlay_rgba[:, :, :3]
-        overlay_image_alpha(img_result, img_overlay, 0, 0, alpha_mask)
+            # Perform blending
+            alpha_mask = img_overlay_rgba[:, :, 3] / 255.0
+            img_result = img[:, :, :3].copy()
+            img_overlay = img_overlay_rgba[:, :, :3]
+            overlay_image_alpha(img_result, img_overlay, 0, 0, alpha_mask)
 
-        base_file_name = "back_aug_"+str(uuid.uuid4().hex)
+            base_file_name = "back_aug_"+str(uuid.uuid4().hex)
 
-        # Save result
-        Image.fromarray(img_result).save(os.path.join(destiny_folder, base_file_name + ".jpg"))
-        # Copy XML and rename it as
-        xml_file_name_to_copy = (image.replace(".jpg",".xml")).replace(".jpeg",".xml")
-        shutil.copy(os.path.join(source_folder, "annotations", xml_file_name_to_copy),
-                    os.path.join(destiny_annotations_folder, xml_file_name_to_copy))
-        #modify XML file information to match with the new file
-        fixFilenameXML(os.path.join(destiny_annotations_folder, xml_file_name_to_copy))
+            # Save result
+            Image.fromarray(img_result).save(os.path.join(destiny_folder, base_file_name + ".jpg"))
+            # Copy XML and rename it as
+            xml_file_name_to_copy = (image.replace(".jpg",".xml")).replace(".jpeg",".xml")
+            shutil.copy(os.path.join(source_folder, "annotations", xml_file_name_to_copy),
+                        os.path.join(destiny_annotations_folder, xml_file_name_to_copy))
+            #modify XML file information to match with the new file
+            fixFilenameXML(os.path.join(destiny_annotations_folder, xml_file_name_to_copy))
+        except:
+            print("Got an error during processing...")
+            continue
 

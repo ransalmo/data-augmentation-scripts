@@ -160,7 +160,7 @@ def calculate_max_x_y(image_arr, box_height, box_width):
     return good_fit_positions
 
 
-def generate_synthetic_images(leaf_source_folder, stains_source_folder, destiny_folder, to_generate = 10, max_stains = 5, max_tries = 20):
+def generate_synthetic_images(leaf_source_folder, stains_source_folder, destiny_folder, to_generate = 200, max_stains = 15, max_tries = 20):
     leaf_files = [file for file in os.listdir(leaf_source_folder) if file.endswith("jpg") or file.endswith("jpeg")]
     stains_files = [file for file in os.listdir(stains_source_folder) if file.endswith("png")]
     annotations_path = os.path.join(destiny_folder, "annotations")

@@ -23,6 +23,6 @@ def remove_bad_candidates(path_to_filter, file_extension = "png"):
 	for file in files:
 		image = cv2.imread(os.path.join(path_to_filter, file))
 		result = image_colorfulness(image)
-		if result == 0.0:
+		if result < 10.0:
 			print("Removing the image is not useful")
 			os.remove(os.path.join(path_to_filter, file))
