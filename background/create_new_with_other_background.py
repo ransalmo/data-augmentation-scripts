@@ -82,7 +82,7 @@ def resize(image, height, width):
     return resized_image
 
 
-def create_new_image_with_backcground(source_folder, destiny_folder, backgrounds_path):
+def create_new_image_with_background(source_folder, destiny_folder, backgrounds_path):
     destiny_annotations_folder = os.path.join(destiny_folder, "annotations")
     if not os.path.exists(os.path.join(source_folder, "annotations")):
         raise ValueError("The annotations folder is mandatory")
