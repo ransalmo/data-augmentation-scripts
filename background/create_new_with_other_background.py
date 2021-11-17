@@ -14,7 +14,7 @@ def fixFilenameXML(xmlPath):
     tree = ET.parse(xmlPath)
     root = tree.getroot()
     for fileNameXML in root.iter('filename'):
-        fileNameXML.text = fileNameXML.text.replace(".xml", ".jpg")
+        fileNameXML.text = fileName.replace(".xml", ".jpg")
     tree.write(xmlPath)
     return
 
@@ -72,7 +72,10 @@ def crop_picture_arr(image, new_height, new_width):
     if new_height >= h and new_width >= w:
         raise ValueError("Does not make sense resize to the same size")
     else:
-        crop_img = image[new_height, new_width]
+        start_x = random.randrange(0, h - new_height)
+        start_y = random.randrange(0, w - new_width)
+        crop_img = image[start_y: new_height + start_y, start_x:  new_width + start_x]
+        #crop_img = image[0 : new_height, 0:  new_width]
     return crop_img
 
 
@@ -126,10 +129,11 @@ def create_new_image_with_background(source_folder, destiny_folder, backgrounds_
             # Copy XML and rename it as
             xml_file_name_to_copy = (image.replace(".jpg",".xml")).replace(".jpeg",".xml")
             shutil.copy(os.path.join(source_folder, "annotations", xml_file_name_to_copy),
-                        os.path.join(destiny_annotations_folder, xml_file_name_to_copy))
+                        os.path.join(destiny_annotations_folder, base_file_name + ".xml"))
             #modify XML file information to match with the new file
-            fixFilenameXML(os.path.join(destiny_annotations_folder, xml_file_name_to_copy))
-        except:
-            print("Got an error during processing...")
+            fixFilenameXML(os.path.join(destiny_annotations_folder, base_file_name + ".xml"))
+            print("Image {0} generated".format(base_file_name+".jp=g"))
+        except Exception as e:
+            print('Failed to upload to ftp: ' + str(e))
             continue
 

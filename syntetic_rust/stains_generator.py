@@ -15,7 +15,7 @@ from . segmentation.segmentation import *
 def get_images_and_annotation(images_path, xml_path):
     xmls = [xml_file for xml_file in os.listdir(xml_path) if xml_file.endswith('xml')]
     xmls.sort()
-    images = [image_file for image_file in os.listdir(images_path) if image_file.endswith('jpg') or image_file.endswith('jpeg')]
+    images = [image_file for image_file in os.listdir(images_path) if image_file.endswith('jpg') or image_file.endswith('JPG')]
     images.sort()
     if len(xmls) != len(images):
         raise ValueError("The count does not match")

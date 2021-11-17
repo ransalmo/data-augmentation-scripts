@@ -2,12 +2,13 @@ import background.create_new_with_other_background
 
 import os
 
-images_path = "/Users/randysalas/Documents/Roya/Test 9 Oct/images"
+images_path = "/Users/randysalas/Desktop/data/train"
 
-backgrounds_path = "/Users/randysalas/Documents/Roya/Backgrounds"
+backgrounds_path = "/Users/randysalas/Desktop/data/backgrounds"
 
-result_path = "/Users/randysalas/Documents/Roya/FakeBack2"
+result_path = "/Users/randysalas/Desktop/data/train_back"
 
-background.create_new_with_other_background.create_new_image_with_background(images_path, result_path, backgrounds_path)
+for i in range(5):
+    background.create_new_with_other_background.create_new_image_with_background(images_path, result_path, backgrounds_path)
 
 print("Done")
