@@ -69,7 +69,7 @@ def generate_pascal_voc_xml(path_to_save, image_name, main_class_name, image_hei
       xmin = SubElement(bndbox, 'xmin')
       xmin.text = str(other_bnd_box[1])
       ymin = SubElement(bndbox, 'ymin')
-      ymin.text = str(other_bnd_box[1])
+      ymin.text = str(other_bnd_box[2])
       xmax = SubElement(bndbox, 'xmax')
       xmax.text = str(other_bnd_box[3])
       ymax = SubElement(bndbox, 'ymax')
@@ -171,6 +171,7 @@ def generate_synthetic_images(leaf_source_folder, stains_source_folder, destiny_
         os.makedirs(annotations_path)
 
     for i in range(to_generate):
+        print("Generating image {0}".format(i))
         base_name = str(uuid.uuid4().hex)
         new_image_name = base_name + ".jpg"
         new_xml_file = base_name + ".xml"
@@ -188,24 +189,35 @@ def generate_synthetic_images(leaf_source_folder, stains_source_folder, destiny_
         main_x2 = width - 5
         main_y2 = height - 5
         # copy leaf file
+        print("Copy new leaf file")
         shutil.copyfile(os.path.join(leaf_source_folder, leaf_file), os.path.join(destiny_folder, new_image_name))
-        for k in range(max_stains):
+        stains_to_generate = random.randrange(1, max_stains)
+        print("Stains to generate: {0}".format(stains_to_generate))
+        for k in range(stains_to_generate):
+            print("Stain to generate number: {0}".format(k))
             tries = 0
             while True:
                 stain_file = random.choice(stains_files)
                 stain_image = cv2.imread(os.path.join(stains_source_folder, stain_file))
                 stain_height, stain_width, _ = stain_image.shape
                 valid_positions = calculate_max_x_y(binary_leaf, stain_width, stain_height)
+                print("Valid positions generated")
                 if len(valid_positions) == 0:
+                    print("No valid positions skipping")
                     break
+                print("Selecting s random position")
                 x1, y1 = random.choice(valid_positions)
-
+                print("Positions selected: {0} {1}".format(x1, y1))
+                print("checking if overlaps")
                 if overlaps([x1, y1, x1 + stain_width, y1 + stain_height], used_rectangles):
+                    print("Overlap detected")
                     tries = tries + 1
+                    print("Incrementing tries count to {0}".format(tries))
                 elif tries == max_tries:
+                    print("skipping...")
                     break
                 else:
-                    tries = 0
+                    print("Blending images")
                     class_name = stain_file.split("_")[0]
                     used_rectangles.append([x1, y1, x1 + stain_width, y1 + stain_height])
                     bound_boxes.append([class_name, x1, y1, x1 + stain_width, y1 + stain_height])
@@ -218,9 +230,12 @@ def generate_synthetic_images(leaf_source_folder, stains_source_folder, destiny_
                     img_overlay = img_overlay_rgba[:, :, :3]
                     overlay_image_alpha(img_result, img_overlay, x1, y1, alpha_mask)
                     Image.fromarray(img_result).save(os.path.join(destiny_folder, new_image_name))
+                    print("Blending done")
                     break
 
         # generate xml
+        print("Generating xml for image: {0}".format(new_image_name))
         generate_pascal_voc_xml(annotations_path, new_image_name, "hoja", height, width, main_x1, main_y1, main_x2, main_y2, bound_boxes)
+        print("Image {0} generated, image number {1}".format(i, k))
 
 

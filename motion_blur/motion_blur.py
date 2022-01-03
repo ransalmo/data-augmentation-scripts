@@ -1,3 +1,5 @@
+import random
+
 import cv2
 import numpy
 import os
@@ -29,10 +31,11 @@ def generate_vertical_kernel(size):
     return kernel
 
 
-def generate_motion_blur_pictures(source_path, destiny_path, filter_size=30, horizontal=True):
+def generate_motion_blur_pictures(source_path, destiny_path, horizontal=True):
     post_fix = "_blur" if horizontal else "_blur_vertical"
     files = [file for file in os.listdir(source_path) if file.endswith(".jpg") or file.endswith(".jpeg")]
     for file in files:
+        filter_size = random.randrange(25,40)
         original_img = cv2.imread(os.path.join(source_path, file))
         if horizontal:
             kernel = generate_horizontal_kernel(filter_size)
@@ -51,5 +54,11 @@ def generate_motion_blur_pictures(source_path, destiny_path, filter_size=30, hor
 
         # write XML
         xml_path = os.path.join(source_path, "annotations", xml_file_name)
-        copy_and_rename_xml(xml_path, os.path.join(destiny_path, new_xml_file_name),
+
+        if not os.path.exists(os.path.join(destiny_path, "annotations")):
+            os.makedirs(os.path.join(destiny_path, "annotations"))
+
+        new_xml_path = os.path.join(os.path.join(destiny_path, "annotations"), new_xml_file_name)
+
+        copy_and_rename_xml(xml_path, new_xml_path,
                             new_image_name)

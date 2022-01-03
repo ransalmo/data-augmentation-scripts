@@ -3,8 +3,8 @@ import edge_enhacement.edge_enhacement
 import motion_blur.motion_blur
 import contrast.contrast
 
-source_folder = "/Users/randysalas/Documents/Roya/TestFilter"
-destiny_folder = "/Users/randysalas/Documents/Roya/TestFilterResults"
+source_folder = "/Users/randysalas/Desktop/data/syntetic_clean"
+destiny_folder = "/Users/randysalas/Desktop/data/filters_syntetic"
 
 print("Contrast")
 contrast.contrast.generate_contrtast_pictures(source_folder, destiny_folder)

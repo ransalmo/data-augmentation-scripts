@@ -28,5 +28,9 @@ def generate_contrtast_pictures(source_path, destiny_path):
         xml_file_name = file.replace(".jpeg", ".xml").replace(".jpg", ".xml")
         # write XML
         xml_path = os.path.join(source_path, "annotations", xml_file_name)
-        copy_and_rename_xml(xml_path, os.path.join(destiny_path, filename + "_contrast" + ".xml"), filename + "_contrast" + file_extension)
+
+        if not os.path.exists(os.path.join(destiny_path, "annotations")):
+            os.makedirs(os.path.join(destiny_path, "annotations"))
+
+        copy_and_rename_xml(xml_path, os.path.join(destiny_path, "annotations", filename + "_contrast" + ".xml"), filename + "_contrast" + file_extension)
 

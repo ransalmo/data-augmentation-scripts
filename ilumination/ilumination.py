@@ -40,6 +40,12 @@ def generate_gamma_corrected_images(source_path, destiny_path):
         new_xml_file_name = new_image_file_name.replace(".jpeg", ".xml").replace(".jpg", ".xml")
         # write XML
         xml_path = os.path.join(source_path, "annotations", xml_file_name)
-        copy_and_rename_xml(xml_path, os.path.join(destiny_path, new_xml_file_name),
+
+        if not os.path.exists(os.path.join(destiny_path, "annotations")):
+            os.makedirs(os.path.join(destiny_path, "annotations"))
+
+        new_xml_path = os.path.join(os.path.join(destiny_path, "annotations"), new_xml_file_name)
+
+        copy_and_rename_xml(xml_path, new_xml_path,
                             new_image_file_name)
 

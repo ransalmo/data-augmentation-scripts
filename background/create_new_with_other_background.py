@@ -72,10 +72,14 @@ def crop_picture_arr(image, new_height, new_width):
     if new_height >= h and new_width >= w:
         raise ValueError("Does not make sense resize to the same size")
     else:
-        start_x = random.randrange(0, h - new_height)
-        start_y = random.randrange(0, w - new_width)
-        crop_img = image[start_y: new_height + start_y, start_x:  new_width + start_x]
-        #crop_img = image[0 : new_height, 0:  new_width]
+        start_x = 0
+        start_y = 0
+        if new_width >= new_height:
+            start_x = random.randrange(0, h - new_height)
+            start_y = random.randrange(0, w - new_width)
+            crop_img = image[start_y: new_height + start_y, start_x:  new_width + start_x]
+        else:
+            crop_img = image[start_x : new_height, start_y:  new_width]
     return crop_img
 
 
@@ -132,7 +136,7 @@ def create_new_image_with_background(source_folder, destiny_folder, backgrounds_
                         os.path.join(destiny_annotations_folder, base_file_name + ".xml"))
             #modify XML file information to match with the new file
             fixFilenameXML(os.path.join(destiny_annotations_folder, base_file_name + ".xml"))
-            print("Image {0} generated".format(base_file_name+".jp=g"))
+            print("Image {0} generated".format(base_file_name+".jpg"))
         except Exception as e:
             print('Failed to upload to ftp: ' + str(e))
             continue
