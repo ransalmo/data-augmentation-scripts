@@ -25,7 +25,7 @@ def generate_kernel():
 
 
 def generate_edge_enhacement_pictures(source_path, destiny_path):
-    files = [file for file in os.listdir(source_path) if file.endswith(".jpg") or file.endswith(".jpeg")]
+    files = [file for file in os.listdir(source_path) if not file.startswith(".") and (file.endswith(".jpg") or file.endswith(".jpeg"))]
     for file in files:
         original_img = cv2.imread(os.path.join(source_path, file))
         kernel = generate_kernel()

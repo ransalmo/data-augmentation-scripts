@@ -97,8 +97,8 @@ def create_new_image_with_background(source_folder, destiny_folder, backgrounds_
         os.makedirs(destiny_folder)
     if not os.path.exists(destiny_annotations_folder):
         os.makedirs(destiny_annotations_folder)
-    images = [file for file in os.listdir(source_folder) if file.endswith("jpg") or file.endswith("jpeg")]
-    backgrounds = [file for file in os.listdir(backgrounds_path) if file.endswith("jpg") or file.endswith("jpeg")]
+    images = [file for file in os.listdir(source_folder) if not file.startswith(".") and (file.endswith("jpg") or file.endswith("jpeg"))]
+    backgrounds = [file for file in os.listdir(backgrounds_path) if not file.startswith(".") and (file.endswith("jpg") or file.endswith("jpeg"))]
     for image in images:
         try:
             background_file = random.choice(backgrounds)
@@ -106,10 +106,9 @@ def create_new_image_with_background(source_folder, destiny_folder, backgrounds_
             temp_image = cv2.imread(os.path.join(source_folder, image))
             height_back, width_back, _ = temp_back.shape
             height_image, width_image, _ = temp_image.shape
-            if height_back >= height_image and width_back >= width_image:
-                temp_back = crop_picture_arr(temp_back, height_image, width_image)
-            else:
-                temp_back = resize(temp_back, height_image, width_image)
+            dimensions = (width_image, height_image)
+            temp_back = cv2.resize(temp_back, dimensions, interpolation=cv2.INTER_AREA)
+
             back_ground_temp_path = os.path.join(os.getcwd(), "wkr_background.jpg")
             cv2.imwrite(back_ground_temp_path, temp_back)
             leaf_temp_path = os.path.join(os.getcwd(), "wkr_image.png")

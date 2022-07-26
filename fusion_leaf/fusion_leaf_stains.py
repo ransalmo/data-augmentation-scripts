@@ -83,15 +83,21 @@ def generate_pascal_voc_xml(path_to_save, image_name, main_class_name, image_hei
 
 
 def generate_binary_image(original_image_path):
-    original_image = cv2.imread(original_image_path)
-    gray_image = cv2.cvtColor(original_image, cv2.COLOR_BGR2GRAY)
-    #127
-    (thresh, black_and_white_image) = cv2.threshold(gray_image, 127, 255, cv2.THRESH_BINARY)
-    return black_and_white_image
+    try:
+        original_image = cv2.imread(original_image_path)
+        gray_image = cv2.cvtColor(original_image, cv2.COLOR_BGR2GRAY)
+        #127
+        (thresh, black_and_white_image) = cv2.threshold(gray_image, 127, 255, cv2.THRESH_BINARY)
+        return black_and_white_image
+    except:
+        print("Failed with the original image path: {0}".format(original_image_path))
 
 
 def is_valid_position(binary_image, coordinates):
     x1, y1, x2, y2 = coordinates
+    height, width = binary_image.shape
+    if x1 >= width or x2 >= width or y1 >= height or y2 >= height:
+        return False
     crop_image = binary_image[y1:y2, x1:x2]
     avg_color_per_row = np.average(crop_image, axis=0)
     avg_color = np.average(avg_color_per_row, axis=0)
@@ -161,10 +167,10 @@ def calculate_max_x_y(image_arr, box_height, box_width):
 
 
 def generate_synthetic_images(leaf_source_folder, stains_source_folder, destiny_folder, to_generate = 200, max_stains = 15, max_tries = 20):
-    leaf_files = [file for file in os.listdir(leaf_source_folder) if file.endswith("jpg") or file.endswith("jpeg")]
-    stains_files = [file for file in os.listdir(stains_source_folder) if file.endswith("png")]
+    leaf_files = [file for file in os.listdir(leaf_source_folder) if not file.startswith('.') and file.endswith("jpg") or file.endswith("jpeg") and not file.startswith(".")]
+    stains_files = [file for file in os.listdir(stains_source_folder) if not file.startswith('.') and file.endswith("png") and not file.startswith(".")]
     annotations_path = os.path.join(destiny_folder, "annotations")
-
+    max_tries = 5
     if not os.path.exists(destiny_folder):
         os.makedirs(destiny_folder)
     if not os.path.exists(annotations_path):
@@ -172,7 +178,7 @@ def generate_synthetic_images(leaf_source_folder, stains_source_folder, destiny_
 
     for i in range(to_generate):
         print("Generating image {0}".format(i))
-        base_name = str(uuid.uuid4().hex)
+        base_name = "syntetic_" + str(uuid.uuid4().hex)
         new_image_name = base_name + ".jpg"
         new_xml_file = base_name + ".xml"
         used_rectangles = []
@@ -209,8 +215,9 @@ def generate_synthetic_images(leaf_source_folder, stains_source_folder, destiny_
                 x1, y1 = random.choice(valid_positions)
                 print("Positions selected: {0} {1}".format(x1, y1))
                 print("checking if overlaps")
-                if overlaps([x1, y1, x1 + stain_width, y1 + stain_height], used_rectangles):
-                    print("Overlap detected")
+                valid = is_valid_position(binary_leaf, [x1, y1, x1 + stain_width, y1 + stain_height])
+                if overlaps([x1, y1, x1 + stain_width, y1 + stain_height], used_rectangles) or not valid:
+                    print("Overlap or invalid position detected")
                     tries = tries + 1
                     print("Incrementing tries count to {0}".format(tries))
                 elif tries == max_tries:

@@ -2,11 +2,11 @@ import background.create_new_with_other_background
 
 import os
 
-images_path = "/Users/randysalas/Desktop/data/train"
+images_path = "/Volumes/Randy/data/original_train"
 
-backgrounds_path = "/Users/randysalas/Desktop/data/backgrounds"
+backgrounds_path = "/Volumes/Randy/data/backgrounds"
 
-result_path = "/Users/randysalas/Desktop/data/train_back"
+result_path = "/Volumes/Randy/data/backgroundsV2"
 
 for i in range(5):
     background.create_new_with_other_background.create_new_image_with_background(images_path, result_path, backgrounds_path)

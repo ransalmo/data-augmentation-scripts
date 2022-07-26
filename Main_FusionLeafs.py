@@ -1,10 +1,10 @@
 import fusion_leaf.fusion_leaf_stains
 
-leaf_source_folder = "/Users/randysalas/Desktop/data/healthy"
+leaf_source_folder = "/Volumes/Randy/data/healthy"
 
-stains_source_folder = "/Users/randysalas/Desktop/data/strains"
+stains_source_folder = "/Volumes/Randy/data/strains"
 
-destiny_folder = "/Users/randysalas/Desktop/data/generated"
+destiny_folder = "/Volumes/Randy/data/synteticv2"
 
 to_generate = 2500
 

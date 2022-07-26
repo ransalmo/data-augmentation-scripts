@@ -33,7 +33,7 @@ def generate_vertical_kernel(size):
 
 def generate_motion_blur_pictures(source_path, destiny_path, horizontal=True):
     post_fix = "_blur" if horizontal else "_blur_vertical"
-    files = [file for file in os.listdir(source_path) if file.endswith(".jpg") or file.endswith(".jpeg")]
+    files = [file for file in os.listdir(source_path) if not file.startswith(".") and (file.endswith(".jpg") or file.endswith(".jpeg"))]
     for file in files:
         filter_size = random.randrange(25,40)
         original_img = cv2.imread(os.path.join(source_path, file))

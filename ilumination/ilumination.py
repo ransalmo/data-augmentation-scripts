@@ -28,7 +28,7 @@ def adjust_gamma(image, gamma=1.0):
 
 
 def generate_gamma_corrected_images(source_path, destiny_path):
-    files = [file for file in os.listdir(source_path) if file.endswith(".jpg") or file.endswith(".jpeg")]
+    files = [file for file in os.listdir(source_path) if not file.startswith(".") and (file.endswith(".jpg") or file.endswith(".jpeg"))]
     for file in files:
         random_gamma = random.uniform(1.0, 4.0)
         original_img = cv2.imread(os.path.join(source_path, file))

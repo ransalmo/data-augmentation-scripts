@@ -17,7 +17,7 @@ def copy_and_rename_xml(original_path, new_path, reference_image_name):
 
 
 def generate_contrtast_pictures(source_path, destiny_path):
-    files = [file for file in os.listdir(source_path) if file.endswith(".jpg") or file.endswith(".jpeg")]
+    files = [file for file in os.listdir(source_path) if not file.startswith(".") and (file.endswith(".jpg") or file.endswith(".jpeg"))]
     for file in files:
         original_img = cv2.imread(os.path.join(source_path, file))
         img_yuv = cv2.cvtColor(original_img, cv2.COLOR_BGR2YUV)
